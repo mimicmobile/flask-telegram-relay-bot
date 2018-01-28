@@ -1,0 +1,8 @@
+certifi==2018.1.18
+click==6.7
+Flask==0.12.2
+future==0.16.0
+gevent==1.2.2
+greenlet==0.4.12
+gunicorn==19.7.1
+python-telegram-bot==9.0.0

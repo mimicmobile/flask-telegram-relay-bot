@@ -1,0 +1,6 @@
+*.pyc
+.idea
+.python-version
+__pycache__
+certs/
+variables.env

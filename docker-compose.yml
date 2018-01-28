@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  bot:
+    build:
+      context: .
+    # There are a number of variables we need to define before we can launch this service
+    # At a minimum you must provide:
+    #  HOST
+    #    (Your FQDN that Telegram connects to for webhook events)
+    #  TOKEN
+    #    (Your telegram generated token from BotFather)
+    #  SOURCE_TOKEN
+    #    (A token of your choosing that your source connects to to relay)
+    #
+    # The most convenient way is to create a variables.env file and store each variable there
+    env_file:
+      - variables.env
+    ports:
+    # Change this if you've specified a different port
+      - 8443:8443
