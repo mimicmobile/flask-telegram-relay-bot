@@ -63,7 +63,7 @@ pip install -r requirements.txt
 *Add necessary variables to `variables.env` file*
 ### Docker
 ```bash
-docker run --env-file variables.env mimicmobile/flask-telegram-relay-bot
+docker run --env-file variables.env --name telegram-bot -p 8443:8443 mimicmobile/flask-telegram-relay-bot
 ```
 ### Locally
 ```bash

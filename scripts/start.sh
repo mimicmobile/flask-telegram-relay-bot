@@ -16,7 +16,7 @@ fi
 
 if [[ -z "$HOST" || -z "$TOKEN" || -z "SOURCE_TOKEN" ]]; then
   echo ""
-  echo "You MUST launch this docker container with the follow env variables:"
+  echo "You MUST launch this docker container with at least the follow env variables:"
   echo ""
   echo "  HOST (Your FQDN that Telegram connects to for webhook events)"
   echo "  TOKEN (Your telegram generated token from BotFather)"
@@ -30,11 +30,12 @@ if [[ -z "$HOST" || -z "$TOKEN" || -z "SOURCE_TOKEN" ]]; then
 fi
 
 echo ""
-echo "Using the following vars to launch Gunicorn+Flask"
+echo "Send POST requests to:"
 echo ""
-echo "  HOST=$HOST"
-echo "  TOKEN=$TOKEN"
-echo "  SOURCE_TOKEN=$SOURCE_TOKEN"
+echo "  https://$HOST:$PORT/$SOURCE_TOKEN"
+echo ""
+echo "  Test using curl:"
+echo "  $ curl -k -X POST -d '{\"message\": \"Hello world!\"}' https://$HOST:$PORT/$SOURCE_TOKEN"
 echo ""
 
 cd bot && \
