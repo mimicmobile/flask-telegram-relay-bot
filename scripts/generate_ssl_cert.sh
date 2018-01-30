@@ -10,7 +10,7 @@ then
     exit
   fi
 
-  mkdir $DIR/certs
+  [ -d $DIR/certs ] || mkdir $DIR/certs
   echo ">> generating self signed cert"
   openssl req -x509 -newkey rsa:4086 \
   -subj "/C=XX/ST=XXXX/L=XXXX/O=XXXX/CN=${HOST}" \

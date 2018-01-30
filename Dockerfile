@@ -12,4 +12,6 @@ COPY . /usr/src/app
 
 WORKDIR /usr/src/app
 
+VOLUME /usr/src/app/certs
+
 CMD [ "scripts/start.sh" ]
