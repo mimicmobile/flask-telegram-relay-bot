@@ -1,7 +1,12 @@
 FROM python:3.4.6
-MAINTAINER mimicmobile
+LABEL maintainer="Jeff Corcoran <jcorcoran+github@gmail.com>"
+ARG BUILD_DATE
+ARG VCS_REF
 
-# nginx
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-url="https://github.com/mimicmobile/flask-telegram-relay-bot.git" \
+      org.label-schema.vcs-ref=$VCS_REF
+
 
 RUN apt-get update; apt-get install -y openssl
 
