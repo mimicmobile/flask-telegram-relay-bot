@@ -76,6 +76,7 @@ The following commands are currently available:
 * `/unregister` - Unregister channel.  Bot will leave
 * `/mute` - Mute output in _all_ channels
 * `/unmute` - Unmute output
+* `/about` - About this bot
 
 ## Thanks
 This bot was heavily influenced by [this gist](https://gist.github.com/leandrotoledo/4e9362acdc5db33ae16c) by [leandrotoledo](https://github.com/leandrotoledo)
