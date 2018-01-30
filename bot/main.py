@@ -70,9 +70,19 @@ class BotDispatcher:
         self.dispatcher.add_handler(CommandHandler('unregister', unregister))
         self.dispatcher.add_handler(CommandHandler('mute', mute))
         self.dispatcher.add_handler(CommandHandler('unmute', unmute))
+        self.dispatcher.add_handler(CommandHandler('about', about))
 
     def process_update(self, update):
         self.dispatcher.process_update(update)
+
+
+def about(bot, update):
+    utils.send_message(chat_id=utils.get_chat().id,
+                       text="Running <a href=\"{}\">flask-telegram-relay-bot</a> ({})\n"
+                            "| Built: {} "
+                       .format('https://github.com/mimicmobile/flask-telegram-relay-bot',
+                               os.getenv('DOCKER_VCS_REF'),
+                               os.getenv('DOCKER_BUILD_DATE')))
 
 
 def register(bot, update):
@@ -115,14 +125,14 @@ def unregister(bot, update):
 
 
 def mute(bot, update):
-    if has_permission() or utils.is_chat_private():
+    if utils.is_chat_private() or has_permission():
         toggle_mute(True)
     else:
         permission_denied()
 
 
 def unmute(bot, update):
-    if has_permission() or utils.is_chat_private():
+    if utils.is_chat_private() or has_permission():
         toggle_mute(False)
     else:
         permission_denied()

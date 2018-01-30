@@ -7,6 +7,16 @@ if [ -e "./variables.env" ]; then
   set -a; . ./variables.env
 fi
 
+if [[ -z "$DOCKER_BUILD_DATE" && -x "$(command -v git)" ]]; then
+    DOCKER_VCS_REF=$(git show -s --format=%h HEAD)
+    DOCKER_BUILD_DATE=$(git show -s --format=%ci HEAD)
+fi
+
+if ! [ -z "$DOCKER_BUILD_DATE" ]; then
+    echo ""
+    echo "Build date ($DOCKER_BUILD_DATE) VCS ref ($DOCKER_VCS_REF)"
+fi
+
 ./scripts/generate_ssl_cert.sh
 
 # Setup default port
@@ -48,6 +58,8 @@ gunicorn \
   -e HOST=$HOST \
   -e CERT=../certs/cert.pem \
   -e TOKEN=$TOKEN \
+  -e "DOCKER_BUILD_DATE=$DOCKER_BUILD_DATE" \
+  -e DOCKER_VCS_REF=$DOCKER_VCS_REF \
   -b 0.0.0.0:$PORT \
   main:app
 
