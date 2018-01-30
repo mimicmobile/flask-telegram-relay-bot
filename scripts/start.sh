@@ -1,5 +1,12 @@
 #!/bin/bash
 
+DIR=$(echo $PWD | sed 's/\/scripts//')  # Strip off scripts/ dir if we're in there
+cd $DIR
+
+if [ -e "./variables.env" ]; then
+  set -a; . ./variables.env
+fi
+
 ./scripts/generate_ssl_cert.sh
 
 # Setup default port
@@ -7,8 +14,7 @@ if [ -z "$PORT" ]; then
   PORT=8443
 fi
 
-if [[ -z "$HOST" || -z "$TOKEN" || -z "SOURCE_TOKEN" ]]
-then
+if [[ -z "$HOST" || -z "$TOKEN" || -z "SOURCE_TOKEN" ]]; then
   echo ""
   echo "You MUST launch this docker container with the follow env variables:"
   echo ""
@@ -43,3 +49,5 @@ gunicorn \
   -e TOKEN=$TOKEN \
   -b 0.0.0.0:$PORT \
   main:app
+
+cd ..
