@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
-import io
+import json
 import os
+import traceback
 
 import telegram
-from flask import Flask, request, current_app
+from flask import Flask, request, current_app, logging
 
 from telegram.ext import Dispatcher, CommandHandler
 
@@ -13,12 +14,17 @@ from utils import Utils
 TOKEN = os.getenv('TOKEN')
 SOURCE_TOKEN = os.getenv('SOURCE_TOKEN', "")
 HOST = os.getenv('HOST')  # Same FQDN used when generating SSL Cert
-PORT = os.getenv('PORT', 8443)
+PORT = int(os.getenv('PORT', 8443))
 CERT = os.getenv('CERT')
 CERT_KEY = os.getenv('CERT_KEY')
-CERT_STR = os.getenv('CERT_STR')
 PERMANENT_CHATS = os.getenv('PERMANENT_CHATS')  # Comma separated ids wrapped in a string
 OWNER_ID = os.getenv('OWNER_ID')
+DEBUG = int(os.getenv('DEBUG', 0))
+
+DEBUG_STATE = {
+    0: logging.ERROR,
+    1: logging.DEBUG
+}
 
 ADMIN_LEVEL = 1  # 1=Channel admins + Owner, 2=Channel admins, 3=Owner only
 
@@ -33,10 +39,16 @@ def relay():
         muted = current_app.muted
         chats = current_app.chats
     if not muted:
-        json = request.get_json(force=True)
+        try:
+            request_data = request.get_data().decode('latin-1')
+            logger.debug("request data: {}".format(request_data))
+            parsed_json = json.loads(request_data, strict=False)
+        except:
+            traceback.print_exc()
+            return "ERROR"
         for chat in chats:
             chat_id = telegram_bot.get_chat(chat).id
-            utils.send_message(chat_id=chat_id, text=json['message'])
+            utils.send_message(chat_id=chat_id, text=parsed_json['message'])
         return "OK"
     return "MUTED"
 
@@ -44,6 +56,7 @@ def relay():
 @app.route('/' + TOKEN, methods=['POST'])
 def webhook():
     update = telegram.update.Update.de_json(request.get_json(force=True), telegram_bot)
+    logger.debug("webhook update: {}".format(update))
 
     utils.set_update(update)
     bot_dispatcher.process_update(update)
@@ -143,10 +156,7 @@ def permission_denied():
 
 
 def set_webhook():
-    if CERT_STR:
-        cert = io.StringIO(CERT_STR)
-    else:
-        cert = open(CERT, 'rb')
+    cert = open(CERT, 'rb')
 
     telegram_bot.set_webhook(url='https://%s:%s/%s' % (HOST, PORT, TOKEN),
                              certificate=cert)
@@ -164,15 +174,15 @@ def init():
         except AttributeError:
             current_app.chats = []
 
-    if not SOURCE_TOKEN:
-        print("SOURCE_TOKEN required to receive relays")
-        exit()
+    logger.debug("Added {} chats on start {}".format(len(chats), chats))
 
-    print("Added {} chats on start {}".format(len(chats), chats))
+    if not SOURCE_TOKEN:
+        logger.debug("SOURCE_TOKEN required to receive relays")
+        exit()
 
     params = {
         'host': '0.0.0.0',
-        'port': int(PORT)
+        'port': PORT
     }
 
     if CERT and CERT_KEY:
@@ -184,6 +194,9 @@ def init():
 bot_dispatcher = BotDispatcher()
 utils = Utils(telegram_bot)
 
+logger = logging.getLogger()
+logger.handlers = logging.getLogger('gunicorn.error').handlers
+logger.setLevel(DEBUG_STATE[DEBUG])
 
 app_params = init()
 
