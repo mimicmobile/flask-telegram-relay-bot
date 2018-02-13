@@ -24,7 +24,7 @@ if [ -z "$PORT" ]; then
   PORT=8443
 fi
 
-if [[ -z "$HOST" || -z "$TOKEN" || -z "SOURCE_TOKEN" ]]; then
+if [[ -z "$HOST" || -z "$TOKEN" || -z "$SOURCE_TOKEN" ]]; then
   echo ""
   echo "You MUST launch this docker container with at least the follow env variables:"
   echo ""
