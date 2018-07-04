@@ -17,6 +17,7 @@ HOST = os.getenv('HOST')  # Same FQDN used when generating SSL Cert
 PORT = int(os.getenv('PORT', 8443))
 CERT = os.getenv('CERT')
 CERT_KEY = os.getenv('CERT_KEY')
+DISABLE_SSL = os.getenv('DISABLE_SSL')
 PERMANENT_CHATS = os.getenv('PERMANENT_CHATS')  # Comma separated ids wrapped in a string
 OWNER_ID = os.getenv('OWNER_ID')
 DEBUG = int(os.getenv('DEBUG', 0))
@@ -166,7 +167,10 @@ def permission_denied():
 
 
 def set_webhook():
-    cert = open(CERT, 'rb')
+    if DISABLE_SSL:
+        cert = None
+    else:
+        cert = open(CERT, 'rb')
 
     telegram_bot.set_webhook(url='https://%s:%s/%s' % (HOST, PORT, TOKEN),
                              certificate=cert)
@@ -175,16 +179,19 @@ def set_webhook():
 def init():
     set_webhook()
 
-    chats = PERMANENT_CHATS.split(',')
+    if PERMANENT_CHATS:
+        chats = PERMANENT_CHATS.split(',')
 
-    with app.app_context():
-        current_app.muted = False
-        try:
-            current_app.chats = chats
-        except AttributeError:
-            current_app.chats = []
+        with app.app_context():
+            current_app.muted = False
+            try:
+                current_app.chats = chats
+            except AttributeError:
+                current_app.chats = []
 
-    logger.debug("Added {} chats on start {}".format(len(chats), chats))
+        logger.debug("Added {} chats on start {}".format(len(chats), chats))
+    else:
+        logger.debug("No chats added on start")
 
     if not SOURCE_TOKEN:
         logger.debug("SOURCE_TOKEN required to receive relays")

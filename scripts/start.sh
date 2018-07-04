@@ -17,7 +17,11 @@ if ! [ -z "$DOCKER_BUILD_DATE" ]; then
     echo "Build date ($DOCKER_BUILD_DATE) VCS ref ($DOCKER_VCS_REF)"
 fi
 
-./scripts/generate_ssl_cert.sh
+if [ -z "$DISABLE_SSL" ]; then
+  ./scripts/generate_ssl_cert.sh
+  SSL_PARAMS="--keyfile ../certs/key.pem --certfile ../certs/cert.pem"
+fi
+
 
 # Setup default port
 if [ -z "$PORT" ]; then
@@ -52,9 +56,9 @@ cd bot && \
 gunicorn \
   -w 1 \
   -k gevent \
-  --keyfile ../certs/key.pem \
-  --certfile ../certs/cert.pem \
+  $SSL_PARAMS \
   -e SOURCE_TOKEN=$SOURCE_TOKEN \
+  -e DISABLE_SSL=$DISABLE_SSL \
   -e HOST=$HOST \
   -e CERT=../certs/cert.pem \
   -e TOKEN=$TOKEN \
