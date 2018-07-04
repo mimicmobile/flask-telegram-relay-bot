@@ -34,7 +34,7 @@ telegram_bot = telegram.Bot(TOKEN)
 app = Flask(__name__)
 
 
-@app.route('/' + SOURCE_TOKEN, methods=['POST'])
+@app.route('/relay/' + SOURCE_TOKEN, methods=['POST'])
 def relay():
     with app.app_context():
         muted = current_app.muted
@@ -54,7 +54,7 @@ def relay():
     return "MUTED"
 
 
-@app.route('/' + TOKEN, methods=['POST'])
+@app.route('/relay/' + TOKEN, methods=['POST'])
 def webhook():
     update = telegram.update.Update.de_json(request.get_json(force=True), telegram_bot)
     logger.debug("webhook update: {}".format(update))
@@ -172,7 +172,7 @@ def set_webhook():
     else:
         cert = open(CERT, 'rb')
 
-    telegram_bot.set_webhook(url='https://%s:%s/%s' % (HOST, PORT, TOKEN),
+    telegram_bot.set_webhook(url='https://%s:%s/relay/%s' % (HOST, PORT, TOKEN),
                              certificate=cert)
 
 

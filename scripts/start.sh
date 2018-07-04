@@ -46,10 +46,10 @@ fi
 echo ""
 echo "Send POST requests to:"
 echo ""
-echo "  https://$HOST:$PORT/$SOURCE_TOKEN"
+echo "  https://$HOST:$PORT/relay/$SOURCE_TOKEN"
 echo ""
 echo "  Test using curl:"
-echo "  $ curl -k -X POST -d '{\"message\": \"Hello world!\"}' https://$HOST:$PORT/$SOURCE_TOKEN"
+echo "  $ curl -k -X POST -d '{\"message\": \"Hello world!\"}' https://$HOST:$PORT/relay/$SOURCE_TOKEN"
 echo ""
 
 cd bot && \

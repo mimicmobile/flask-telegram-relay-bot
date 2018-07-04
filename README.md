@@ -24,22 +24,25 @@ This bot uses environment variables to configure and run.  At the minimum, `HOST
   * 1=Channel admins + Owner
   * 2=Channel admins
   * 3=Owner only
+* DISABLE_SSL (default: undefined) - Set to 1 to skip cert creation and use regular ol' http (see **IMPORTANT** below)
 * DEBUG (default: 0) - If set to 1, will enable Flask debug logging
 
 ### Environment file
 The easiest method is to place the above variables you're using in a `variables.env` file.
 
 ## API spec
-This bot listens on a `https://HOST:PORT/SOURCE_TOKEN` for a `POST` request with a `JSON` string body.  _HTML tags are supported_.
+This bot listens on `https://HOST:PORT/relay/SOURCE_TOKEN` for a `POST` request with a `JSON` string body.  _HTML tags are supported_.
 At the moment the only field parsed from the JSON object is `message`.
 
 **IMPORTANT**
  
-   Telegram requires Webhooks to be received over `HTTPS`! **This means we're creating and using self-signed certs**.  This is all taken care for you when the bot starts.  Beware that you may need to grab the public cert from the `certs/` directory (locally or inside the docker container) depending on how you're sending your `POST request` from your service.
+   Telegram requires Webhooks to be received over `HTTPS`! **This means we're optionally creating and using self-signed certs**.  This is all taken care for you when the bot starts.  Beware that you may need to grab the public cert from the `certs/` directory (locally or inside the docker container) depending on how you're sending your `POST request` from your service.
+
+If you're using a load balancer or some other method of handling and terminating your SSL before it reaches the bot, you may need to use `DISABLE_SSL`.  As mentioned above, Telegram -will not- send non-https requests to your bot!
 
 ### curl example
 ```bash
-curl -k -X POST -d '{ "message": "Hello world!" }' https://HOST:PORT/SOURCE_TOKEN
+curl -k -X POST -d '{ "message": "Hello world!" }' https://HOST:PORT/relay/SOURCE_TOKEN
 ```
 ### JSON body example with HTML
 ```json
@@ -50,7 +53,7 @@ curl -k -X POST -d '{ "message": "Hello world!" }' https://HOST:PORT/SOURCE_TOKE
 Having your service deliver `HTTP POST requests` can be done many ways.  If you're using Python or Django, one such way could be to use the [Python logging facility](https://docs.python.org/3/library/logging.html).
 
 Using this fork of the [Python Logging Loggly Handler](https://github.com/mimicmobile/loggly-python-handler), you can see how a logger would be configured in `Python` / `Django`.
-Regardless of how you're sending your requests, your URL is always https://`HOST`:`PORT`/`SOURCE_TOKEN`
+Regardless of how you're sending your requests, your URL is always https://`HOST`:`PORT`/relay/`SOURCE_TOKEN`
 
 ## Install
 _The recommended usage is through Docker._  To install locally clone and install the python requirements:
