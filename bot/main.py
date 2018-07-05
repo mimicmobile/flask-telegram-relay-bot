@@ -72,18 +72,42 @@ class BotDispatcher:
         self.dispatcher.add_handler(CommandHandler('mute', mute))
         self.dispatcher.add_handler(CommandHandler('unmute', unmute))
         self.dispatcher.add_handler(CommandHandler('about', about))
+        self.dispatcher.add_handler(CommandHandler('uptime', uptime))
 
     def process_update(self, update):
         self.dispatcher.process_update(update)
 
 
+def get_uptime():
+    import datetime
+    import psutil
+
+    from dateutil.relativedelta import relativedelta
+
+    p = psutil.Process(os.getpid())
+    created_time = datetime.datetime.fromtimestamp(p.create_time())
+    attrs = ['years', 'months', 'days', 'hours', 'minutes', 'seconds']
+    human_readable = lambda delta: ['%d %s' % (getattr(delta, attr),
+        getattr(delta, attr) > 1 and attr or attr[:-1])
+        for attr in attrs if getattr(delta, attr)]
+    return ' '.join(human_readable(relativedelta(datetime.datetime.now(),
+                                                 created_time)))
+
+
 def about(bot, update):
     utils.send_message(chat_id=utils.get_chat().id,
                        text="Running <a href=\"{}\">flask-telegram-relay-bot</a> ({})\n"
-                            "| Built: {} "
+                            "| Built: {}\n"
+                            "| Uptime: {}"
                        .format('https://github.com/mimicmobile/flask-telegram-relay-bot',
                                os.getenv('DOCKER_VCS_REF'),
-                               os.getenv('DOCKER_BUILD_DATE')))
+                               os.getenv('DOCKER_BUILD_DATE'),
+                               get_uptime()))
+
+
+def uptime(bot, update):
+    utils.send_message(chat_id=utils.get_chat().id,
+                       text="up {}".format(get_uptime()))
 
 
 def register(bot, update):

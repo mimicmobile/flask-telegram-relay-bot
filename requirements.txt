@@ -6,3 +6,5 @@ gevent==1.2.2
 greenlet==0.4.12
 gunicorn==19.7.1
 python-telegram-bot==9.0.0
+dateutils==0.6.6
+psutil==5.4.6
