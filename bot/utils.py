@@ -39,7 +39,7 @@ class Utils:
         return self.update.effective_user
 
     def send_message(self, *args, **kwargs):
-        kwargs.update({'parse_mode': ParseMode.HTML})
+        kwargs.update({'parse_mode': ParseMode.HTML, 'timeout': 20})
         self.bot.send_message(*args, **kwargs)
 
     def matches_user_id(self, owner_id):
