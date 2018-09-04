@@ -196,8 +196,9 @@ def set_webhook():
     else:
         cert = open(CERT, 'rb')
 
-    telegram_bot.set_webhook(url='https://%s:%s/relay/%s' % (HOST, PORT, TOKEN),
-                             certificate=cert)
+    response = telegram_bot.set_webhook(url='https://%s:%s/relay/%s' % (HOST, PORT, TOKEN),
+                                        certificate=cert, timeout=20)
+    logger.debug("set_webhook response: {}".format(response))
 
 
 def init():
