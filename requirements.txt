@@ -1,6 +1,6 @@
 certifi==2018.8.24
 click==6.7
-Flask==0.12.2
+Flask==0.12.3
 future==0.16.0
 gevent==1.2.2
 greenlet==0.4.12
