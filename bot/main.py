@@ -34,6 +34,11 @@ telegram_bot = telegram.Bot(TOKEN)
 app = Flask(__name__)
 
 
+@app.route('/healthz')
+def healthz():
+    return "OK"
+
+
 @app.route('/relay/' + SOURCE_TOKEN, methods=['POST'])
 def relay():
     with app.app_context():
