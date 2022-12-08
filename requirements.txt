@@ -1,4 +1,4 @@
-certifi==2018.8.24
+certifi==2022.12.7
 click==6.7
 Flask==0.12.3
 future==0.16.0
